@@ -1,12 +1,14 @@
 terraform {
   # Remote state in S3 (backend blocks cannot use variables, so the bucket is written here)
-  backend "s3" {
-    bucket       = "terrformstate-060647991200"
+   backend "s3" {
+    bucket       = "mainasara-0920"
     key          = "k3s/terraform.tfstate"
-    region       = "us-west-1"
+    region       = "eu-north-1"
     encrypt      = true
-    use_lockfile = true # S3-native state locking, no DynamoDB table needed
-  }
+    use_lockfile = true
+
+    # Backend authentication
+in GitHub Actions from the AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY secrets.
 
   required_providers {
     aws = {

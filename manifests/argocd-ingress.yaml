@@ -11,10 +11,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - arg.digitalwitch.online
+        - argocd.kingcloud.store
       secretName: argocd-server-tls 
   rules:
-    - host: arg.digitalwitch.online
+    - host: argocd.kingcloud.store
       http:
         paths:
           - path: /
