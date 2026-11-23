@@ -39,7 +39,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_OID_ARN }}
-          aws-region: us-west-1
+          aws-region: eu-north-1
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
