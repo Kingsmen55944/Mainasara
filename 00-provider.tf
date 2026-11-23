@@ -1,3 +1,4 @@
+
 terraform {
   # Remote state in S3
   backend "s3" {
@@ -6,34 +7,38 @@ terraform {
     region       = "eu-north-1"
     encrypt      = true
     use_lockfile = true
-
-    # Backend authentication
-    access_key = "YOUR_ACCESS_KEY"
-    secret_key = "YOUR_SECRET_KEY"
   }
 
+  # Required providers
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
+
     tls = {
       source = "hashicorp/tls"
     }
+
     local = {
       source = "hashicorp/local"
     }
+
     helm = {
       source  = "hashicorp/helm"
       version = "~> 3.0"
     }
+
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = "~> 2.0"
     }
   }
+}
 
-# ---- k3s cluster access for Helm and Kubernetes, read from the kubeconfig stored in S3 ----
+# ---- k3s cluster access for Helm and Kubernetes ----
+# Read kubeconfig stored in S3
+
 data "aws_s3_object" "kubeconfig" {
   bucket     = var.s3_bucket
   key        = aws_s3_object.kubeconfig.key
@@ -44,6 +49,8 @@ locals {
   kubeconfig = yamldecode(data.aws_s3_object.kubeconfig.body)
 }
 
+# Configure Helm Provider
+
 provider "helm" {
   kubernetes = {
     host                   = local.kubeconfig.clusters[0].cluster.server
@@ -53,6 +60,8 @@ provider "helm" {
   }
 }
 
+# Configure Kubernetes Provider
+
 provider "kubernetes" {
   host                   = local.kubeconfig.clusters[0].cluster.server
   cluster_ca_certificate = base64decode(local.kubeconfig.clusters[0].cluster["certificate-authority-data"])
@@ -60,10 +69,8 @@ provider "kubernetes" {
   client_key             = base64decode(local.kubeconfig.users[0].user["client-key-data"])
 }
 
-# Configure the AWS Provider.
+# Configure AWS Provider
 
 provider "aws" {
-  region     = "eu-north-1"
-  access_key = "YOUR_ACCESS_KEY"
-  secret_key = "YOUR_SECRET_KEY"
+  region = "eu-north-1"
 }
