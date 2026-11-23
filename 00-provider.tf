@@ -1,6 +1,6 @@
 terraform {
-  # Remote state in S3 (backend blocks cannot use variables, so the bucket is written here)
-   backend "s3" {
+  # Remote state in S3
+  backend "s3" {
     bucket       = "mainasara-0920"
     key          = "k3s/terraform.tfstate"
     region       = "eu-north-1"
@@ -8,7 +8,10 @@ terraform {
     use_lockfile = true
 
     # Backend authentication
-in GitHub Actions from the AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY secrets.
+    access_key = "YOUR_ACCESS_KEY"
+    secret_key = "YOUR_SECRET_KEY"
+  }
+}
 
   required_providers {
     aws = {
@@ -30,7 +33,6 @@ in GitHub Actions from the AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY secrets.
       version = "~> 2.0"
     }
   }
-}
 
 # ---- k3s cluster access for Helm and Kubernetes, read from the kubeconfig stored in S3 ----
 data "aws_s3_object" "kubeconfig" {
@@ -60,8 +62,9 @@ provider "kubernetes" {
 }
 
 # Configure the AWS Provider.
-# Credentials are NOT stored here: locally they come from `aws configure`,
-# in GitHub Actions from the AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY secrets.
+
 provider "aws" {
-  region = "us-west-1"
+  region     = "eu-north-1"
+  access_key = "YOUR_ACCESS_KEY"
+  secret_key = "YOUR_SECRET_KEY"
 }
